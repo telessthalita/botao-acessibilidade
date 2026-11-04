@@ -44,7 +44,8 @@ Para testar no computador, abra `demo.html` no navegador.
 ## Observações
 
 - **Tamanho do texto:** funciona melhor em sites que usam `rem`/`em` nas fontes (a maioria dos temas modernos). Em temas que fixam tudo em `px`, o aumento é menor.
-- **Sites com política de segurança (CSP):** é preciso liberar `https://vlibras.gov.br` e `https://cdn.jsdelivr.net/gh/spbgovbr-vlibras/` para o Libras funcionar.
+- **Sites com política de segurança (CSP):** para o Libras funcionar, libere `https://vlibras.gov.br` (script, estilo, imagem, fonte, conexão e **frame**, porque o avatar abre numa janela interna), `https://cdn.jsdelivr.net/gh/spbgovbr-vlibras/` e `https://cdn.jsdelivr.net/npm/posthog-js@1.404.0/` (estatísticas de uso do próprio VLibras; a versão pode mudar quando o governo atualizar o widget). Sem CSP, que é o caso da maioria dos sites WordPress, não precisa fazer nada.
+- **Privacidade:** o VLibras é do governo federal e envia estatísticas de uso para o próprio governo. Ele só é carregado quando o visitante liga a opção de Libras.
 - **Leitura em voz alta:** usa as vozes instaladas no aparelho. No celular e no Chrome, o português costuma vir pronto.
 
 ## Licença
