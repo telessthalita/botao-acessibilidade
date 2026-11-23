@@ -20,7 +20,31 @@
     <p>Este é um texto de exemplo para testar o tamanho da letra, o contraste, o espaçamento e a leitura em voz alta. <a href="#">Este é um link de exemplo.</a></p>
     <div class="cartao"><h2>Um cartão animado</h2><p>Com a opção "Parar animações" ligada, ele aparece sem movimento.</p></div>
     <p>Selecione um trecho e use "Ouvir" para ouvir só ele. Sem seleção, a página inteira é lida.</p>
+    <form class="cartao" method="get">
+      <h2>Testar as configurações do botão</h2>
+      <p>É o mesmo que dá para mudar no painel do WordPress. Escolha e clique em Aplicar.</p>
+      <p>
+        <label>Cor <input type="color" name="cor" value="#1449c7" /></label>
+        <label>Lado <select name="lado"><option value="direita">Direita</option><option value="esquerda">Esquerda</option></select></label>
+        <label>Altura <select name="altura"><option value="topo">Em cima</option><option value="meio" selected>No meio</option><option value="baixo">Embaixo</option></select></label>
+        <label>Tamanho <select name="tamanho"><option value="pequeno">Pequeno</option><option value="medio" selected>Médio</option><option value="grande">Grande</option></select></label>
+        <label>Libras <select name="libras"><option value="sim">Sim</option><option value="nao">Não</option></select></label>
+      </p>
+      <button type="submit">Aplicar</button>
+    </form>
   </main>
-  <script src="acessibilidade.js" defer data-cor="#1449c7" data-lado="direita" data-libras="sim"></script>
+  <script>
+    // Monta o botão com o que estiver no endereço (?cor=...&altura=...), igual o plugin faz com o painel.
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var form = document.querySelector('form');
+      var s = document.createElement('script');
+      s.src = 'acessibilidade.js';
+      ['cor', 'lado', 'altura', 'tamanho', 'libras'].forEach(function (k) {
+        if (q.has(k)) { s.dataset[k] = q.get(k); form.elements[k].value = q.get(k); }
+      });
+      document.body.appendChild(s);
+    })();
+  </script>
 </body>
 </html>

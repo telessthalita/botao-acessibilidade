@@ -7,6 +7,8 @@
  *     data-cor="#1449c7"        (cor do botão e das opções ligadas)
  *     data-lado="direita"       (direita | esquerda)
  *     data-libras="sim"         (sim | nao: mostra a opção de Libras pelo VLibras, do governo federal)
+ *     data-altura="meio"        (topo | meio | baixo: onde o botão fica na lateral)
+ *     data-tamanho="medio"      (pequeno | medio | grande)
  *   ></script>
  *
  * Opções: tamanho do texto, ouvir a página, alto contraste, tons de cinza, destacar links,
@@ -23,6 +25,8 @@
     cor: (script && /^#[0-9a-f]{3,8}$/i.test(script.dataset.cor || '')) ? script.dataset.cor : '#1449c7',
     lado: script && script.dataset.lado === 'esquerda' ? 'esquerda' : 'direita',
     libras: !(script && script.dataset.libras === 'nao'),
+    altura: script && /^(topo|baixo)$/.test(script.dataset.altura || '') ? script.dataset.altura : 'meio',
+    tamanho: script && /^(pequeno|grande)$/.test(script.dataset.tamanho || '') ? script.dataset.tamanho : 'medio',
   };
   var CHAVE = 'botao-acessibilidade';
   var TAMANHOS = [90, 100, 115, 130, 150];
@@ -34,9 +38,16 @@
 
   // ---------- estilos (todos com prefixo ba11y- para não brigar com o site)
   var lado = cfg.lado === 'esquerda' ? 'left' : 'right';
+  // tamanho: [largura, altura, largura no hover, ícone]
+  var medida = { pequeno: [38, 44, 44, 22], medio: [46, 52, 54, 26], grande: [56, 64, 64, 32] }[cfg.tamanho];
+  var posicao = {
+    topo: 'top:96px;transform:none',
+    meio: 'top:calc(50% - 74px);transform:translateY(-50%)', // um pouco acima do meio, longe do VLibras
+    baixo: 'top:auto;bottom:24px;transform:none',
+  }[cfg.altura];
   var css = [
-    '.ba11y-botao{position:fixed;' + lado + ':0;top:calc(50% - 74px);transform:translateY(-50%);z-index:2147483000;display:grid;place-items:center;width:46px;height:52px;border:0;border-radius:' + (lado === 'right' ? '14px 0 0 14px' : '0 14px 14px 0') + ';cursor:pointer;background:' + cfg.cor + ';color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:width .2s;padding:0}',
-    '.ba11y-botao:hover,.ba11y-botao:focus-visible{width:54px}',
+    '.ba11y-botao{position:fixed;' + lado + ':0;' + posicao + ';z-index:2147483000;display:grid;place-items:center;width:' + medida[0] + 'px;height:' + medida[1] + 'px;border:0;border-radius:' + (lado === 'right' ? '14px 0 0 14px' : '0 14px 14px 0') + ';cursor:pointer;background:' + cfg.cor + ';color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:width .2s;padding:0}',
+    '.ba11y-botao:hover,.ba11y-botao:focus-visible{width:' + medida[2] + 'px}',
     '.ba11y-painel{position:fixed;' + lado + ':12px;top:50%;transform:translateY(-50%);z-index:2147483001;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;background:#fff;color:#1b1f2a;border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.35);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-sizing:border-box;text-align:left}',
     '.ba11y-painel *{box-sizing:border-box;font-family:inherit;letter-spacing:normal;word-spacing:normal}',
     '.ba11y-painel[hidden],.ba11y-guia[hidden]{display:none!important}',
@@ -98,7 +109,7 @@
     var estilo = el('style', { id: 'ba11y-estilos' }); estilo.textContent = css; document.head.appendChild(estilo);
 
     var botao = el('button', { type: 'button', classe: 'ba11y-botao', 'aria-label': 'Acessibilidade', 'aria-expanded': 'false', 'aria-controls': 'ba11y-painel' });
-    botao.appendChild(icone('M12 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM4 8.5c2.6.8 5.3 1.2 8 1.2s5.4-.4 8-1.2M12 9.7V15m0 0-3 6m3-6 3 6', 26));
+    botao.appendChild(icone('M12 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM4 8.5c2.6.8 5.3 1.2 8 1.2s5.4-.4 8-1.2M12 9.7V15m0 0-3 6m3-6 3 6', medida[3]));
 
     var tamanho = el('output', { 'aria-live': 'polite', texto: '100%' });
     var menos = el('button', { type: 'button', 'aria-label': 'Diminuir o texto', texto: 'A−' });
@@ -120,8 +131,8 @@
     var libras = null;
     if (cfg.libras) {
       libras = el('button', { type: 'button', classe: 'ba11y-opcao', 'aria-pressed': 'false' }, [icone('M7 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1V4.5a1.5 1.5 0 0 1 3 0V10m0-.5V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7s-5-1.6-6.5-4.5L2.8 12.4a1.5 1.5 0 0 1 2.6-1.4L7 13'), el('span', { texto: 'Libras (VLibras)' })]);
-      libras.addEventListener('click', function () { prefs.libras = !prefs.libras; salvar(); aplicar(); if (prefs.libras) carregarLibras(); else location.reload(); });
-      grade.appendChild(libras);
+      libras.addEventListener('click', function () { prefs.libras = !prefs.libras; salvar(); aplicar(); if (prefs.libras) { abrir(false); botao.focus(); carregarLibras(true); } else location.reload(); });
+      grade.insertBefore(libras, grade.firstChild); // Libras vem primeiro na grade
     }
     var restaurar = el('button', { type: 'button', classe: 'ba11y-restaurar', texto: 'Restaurar o padrão' });
 
@@ -187,7 +198,9 @@
   }
 
   // Libras: widget oficial do governo federal (VLibras), carregado só quando a pessoa liga a opção
-  function carregarLibras() {
+  // abrirJa: quando a pessoa acabou de ligar a opção, já abre o avatar sem precisar de outro clique
+  function carregarLibras(abrirJa) {
+    if (abrirJa) abrirAvatar();
     if (document.querySelector('[vw]')) return;
     var caixa = el('div', { vw: '', classe: 'enabled' }, [el('div', { 'vw-access-button': '', classe: 'active' }), el('div', { 'vw-plugin-wrapper': '' }, [el('div', { classe: 'vw-plugin-top-wrapper' })])]);
     document.body.appendChild(caixa);
@@ -195,6 +208,19 @@
     s.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
     s.onload = function () { if (window.VLibras) { new window.VLibras.Widget('https://vlibras.gov.br/app'); window.dispatchEvent(new Event('load')); } };
     document.body.appendChild(s);
+  }
+
+  // espera o widget do VLibras montar o botão dele e clica nele (desiste depois de ~15s)
+  function abrirAvatar() {
+    var tentativas = 0;
+    var t = setInterval(function () {
+      // versão atual: botão dentro de um shadow root; versões antigas: dentro de [vw-access-button]
+      var sombra = document.getElementById('vlibras-access-wrapper');
+      var b = (sombra && sombra.shadowRoot && sombra.shadowRoot.getElementById('vlibras-button')) ||
+        document.querySelector('[vw-access-button] > *');
+      if (b) { clearInterval(t); b.click(); }
+      else if (++tentativas > 60) clearInterval(t);
+    }, 250);
   }
 
   // aplica as classes já salvas o quanto antes (evita piscar), e monta o botão quando a página estiver pronta

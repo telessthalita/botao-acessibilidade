@@ -32,6 +32,8 @@ Copie `acessibilidade.js` para o site e coloque antes de `</body>`:
 | `data-cor` | cor em hexadecimal | `#1449c7` |
 | `data-lado` | `direita` ou `esquerda` | `direita` |
 | `data-libras` | `sim` ou `nao` | `sim` |
+| `data-altura` | `topo`, `meio` ou `baixo` | `meio` |
+| `data-tamanho` | `pequeno`, `medio` ou `grande` | `medio` |
 
 Para testar no computador, abra `demo.html` no navegador.
 
@@ -39,7 +41,7 @@ Para testar no computador, abra `demo.html` no navegador.
 
 1. Copie `acessibilidade.js` para dentro da pasta `wordpress/botao-acessibilidade/`, ou rode `empacotar.ps1`, que já gera o `.zip` pronto.
 2. No WordPress, vá em **Plugins > Adicionar novo > Enviar plugin** e envie o `.zip`.
-3. Ative o plugin. As opções ficam em **Configurações > Acessibilidade**: cor, lado da tela e Libras.
+3. Ative o plugin. As opções ficam no item **Botão Acessibilidade** do menu lateral do painel: cor, lado da tela, altura, tamanho do botão e Libras.
 
 ## Observações
 
