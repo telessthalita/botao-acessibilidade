@@ -39,9 +39,20 @@ Para testar no computador, abra `demo.html` no navegador.
 
 ## No WordPress
 
-1. Copie `acessibilidade.js` para dentro da pasta `wordpress/botao-acessibilidade/`, ou rode `empacotar.ps1`, que já gera o `.zip` pronto.
+1. Rode `empacotar.ps1`. Ele copia o `acessibilidade.js` para dentro do plugin e gera o `botao-acessibilidade.zip`. Não use o "Download ZIP" do GitHub: ele traz o repositório inteiro e sem o JS dentro do plugin.
 2. No WordPress, vá em **Plugins > Adicionar novo > Enviar plugin** e envie o `.zip`.
-3. Ative o plugin. As opções ficam no item **Botão Acessibilidade** do menu lateral do painel: cor, lado da tela, altura, tamanho do botão e Libras.
+3. Ative o plugin. As opções ficam no item **Botão Acessibilidade** do menu lateral do painel: cor, lado da tela, altura, tamanho do botão e Libras. Ao lado tem uma pré-visualização que muda na hora; para valer no site, clique em Salvar.
+
+## Como funciona
+
+- **Um arquivo, sem dependências.** Todo o código fica numa função que roda na hora (IIFE), em JavaScript compatível com navegadores antigos e sem build. Uma trava global impede que o botão seja montado duas vezes.
+- **Configuração pela tag `<script>`.** O script lê os próprios `data-*` (via `document.currentScript`) e valida cada valor. A cor só passa se for hexadecimal, e o resto só aceita as opções da lista. No WordPress, o PHP escreve esses atributos com os valores salvos no painel.
+- **CSS gerado pelo JS.** O visual é montado com a cor, o lado, a altura e o tamanho escolhidos e injetado num `<style>`. Todas as classes começam com `ba11y-` para não brigar com o tema.
+- **Cada recurso é uma classe no `<html>`.** Ligar o alto contraste, por exemplo, só adiciona `ba11y-contraste`, e o CSS cuida do resto. O tamanho do texto muda o `font-size` do `<html>` em porcentagem, e o guia de leitura é uma faixa fixa que segue o ponteiro.
+- **Leitura em voz alta** com a Web Speech API do navegador, em pt-BR. O script lê o trecho selecionado ou a área principal da página, sem menus nem o próprio painel, e divide o texto em frases para contornar o corte de falas longas do Chrome.
+- **Libras sob demanda.** O VLibras só é baixado quando a pessoa liga a opção, e o avatar abre sozinho nesse momento. Desligar recarrega a página, porque o widget não tem como ser desmontado.
+- **Escolhas salvas no aparelho.** As preferências ficam em `localStorage`, com proteção para quando ele está bloqueado. As classes salvas são aplicadas antes de o botão aparecer, para a página não piscar.
+- **Acessível por si só.** Usa `aria-expanded`, `aria-pressed` e `aria-live` para o leitor de tela, abre e fecha pelo teclado (Esc fecha e o foco volta ao botão) e mostra contorno de foco só para quem navega pelo teclado.
 
 ## Observações
 
