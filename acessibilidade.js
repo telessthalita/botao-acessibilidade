@@ -50,7 +50,7 @@
     '.ba11y-botao:hover,.ba11y-botao:focus-visible{width:' + medida[2] + 'px}',
     '.ba11y-painel{position:fixed;' + lado + ':12px;top:50%;transform:translateY(-50%);z-index:2147483001;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;background:#fff;color:#1b1f2a;border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.35);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-sizing:border-box;text-align:left}',
     '.ba11y-painel *{box-sizing:border-box;font-family:inherit;letter-spacing:normal;word-spacing:normal}',
-    '.ba11y-painel[hidden],.ba11y-guia[hidden]{display:none!important}',
+    '.ba11y-painel[hidden],.ba11y-guia-faixa[hidden]{display:none!important}',
     '.ba11y-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}',
     '.ba11y-topo h2{margin:0;font-size:1.15rem;font-weight:700;color:#1b1f2a}',
     '.ba11y-fechar{border:0;background:#eef1f6;border-radius:10px;width:36px;height:36px;cursor:pointer;font-size:1rem;color:#1b1f2a}',
@@ -66,7 +66,7 @@
     '.ba11y-opcao[aria-pressed="true"]{background:' + cfg.cor + ';border-color:' + cfg.cor + ';color:#fff}',
     '.ba11y-restaurar{width:100%;margin-top:12px;border:2px solid #dfe4ec;background:#fff;border-radius:12px;padding:10px;font-weight:700;font-size:.95rem;cursor:pointer;color:#1b1f2a}',
     '.ba11y-botao:focus-visible,.ba11y-painel button:focus-visible{outline:3px solid #ffbf00;outline-offset:2px}',
-    '.ba11y-guia{position:fixed;left:0;right:0;top:0;z-index:2147482999;height:44px;pointer-events:none;background:rgba(255,214,0,.18);border-top:2px solid rgba(0,0,0,.55);border-bottom:2px solid rgba(0,0,0,.55)}',
+    '.ba11y-guia-faixa{position:fixed;left:0;right:0;top:0;z-index:2147482999;height:44px;pointer-events:none;background:rgba(255,214,0,.18);border-top:2px solid rgba(0,0,0,.55);border-bottom:2px solid rgba(0,0,0,.55)}',
     // modos
     'html.ba11y-contraste body *:not(img):not(video):not(iframe):not(svg):not(svg *):not(.ba11y-painel):not(.ba11y-painel *):not(.ba11y-botao):not(.ba11y-botao *){background-color:#000!important;background-image:none!important;color:#fff!important;border-color:#fff!important;box-shadow:none!important;text-shadow:none!important}',
     'html.ba11y-contraste body{background:#000!important;color:#fff!important}',
@@ -78,7 +78,7 @@
     'html.ba11y-espaco body p{margin-bottom:1.4em!important}',
     'html.ba11y-parado *,html.ba11y-parado *::before,html.ba11y-parado *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}',
     'html.ba11y-cursor,html.ba11y-cursor *{cursor:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M4 2l15 9-6.5 1.5L10 19z\' fill=\'%23000\' stroke=\'%23fff\' stroke-width=\'1.5\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") 6 3,auto!important}',
-    '@media print{.ba11y-botao,.ba11y-painel,.ba11y-guia{display:none!important}}',
+    '@media print{.ba11y-botao,.ba11y-painel,.ba11y-guia-faixa{display:none!important}}',
   ].join('\n');
 
   // ---------- montagem
@@ -140,7 +140,8 @@
       el('div', { classe: 'ba11y-topo' }, [el('h2', { id: 'ba11y-titulo', texto: 'Acessibilidade' }), fechar]),
       el('div', { classe: 'ba11y-caixa', role: 'group', 'aria-label': 'Tamanho do texto' }, [el('span', { texto: 'Tamanho do texto' }), el('div', { classe: 'ba11y-linha' }, [menos, tamanho, mais])]),
       ouvir, grade, restaurar]);
-    var guia = el('div', { classe: 'ba11y-guia', 'aria-hidden': 'true', hidden: '' });
+    // Classe própria da faixa: ba11y-guia no <html> indica apenas a preferência ativa.
+    var guia = el('div', { classe: 'ba11y-guia-faixa', 'aria-hidden': 'true', hidden: '' });
     document.body.appendChild(botao); document.body.appendChild(painel); document.body.appendChild(guia);
 
     function aplicar() {
