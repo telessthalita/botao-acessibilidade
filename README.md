@@ -5,7 +5,7 @@ Botão lateral de acessibilidade em **um único arquivo JavaScript**, sem depend
 ## O que tem
 
 - **Tamanho do texto**, em 5 níveis (90% a 150%)
-- **Ouvir o texto da página**: leitura em voz alta pelo próprio navegador, em português. Um botão só para ouvir, pausar e continuar, e botões − e + para a velocidade da leitura (de 0,5x a 2x). Se a pessoa selecionar um trecho, só ele é lido.
+- **Ouvir o texto da página**: leitura em voz alta pelo próprio navegador, em português. Um botão só para ouvir, pausar e continuar, e botões − e + para a velocidade da leitura (de 0,5x a 2x). "Restaurar o padrão" também para a leitura. Se a pessoa selecionar um trecho, só ele é lido.
 - **Alto contraste**: fundo preto, texto branco e links em amarelo
 - **Tons de cinza**
 - **Destacar links**

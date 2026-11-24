@@ -213,6 +213,12 @@
       };
       devagar.addEventListener('click', function () { mudarVelocidade(-1); });
       rapido.addEventListener('click', function () { mudarVelocidade(1); });
+      // "Restaurar o padrão" também para a leitura: o próximo "Ouvir" começa do início
+      restaurar.addEventListener('click', function () {
+        if (!partes.length) return;
+        sessao++; partes = []; atual = 0; pausado = false; mudouPausado = false;
+        speechSynthesis.resume(); speechSynthesis.cancel(); marcar(false);
+      });
       addEventListener('pagehide', function () { sessao++; speechSynthesis.cancel(); });
     }
 
