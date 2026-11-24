@@ -30,6 +30,8 @@
   };
   var CHAVE = 'botao-acessibilidade';
   var TAMANHOS = [90, 100, 115, 130, 150];
+  var VELOCIDADES = [0.5, 0.75, 1, 1.25, 1.5, 2]; // velocidade da leitura em voz alta (1 = normal)
+  function nivelVelocidade() { return typeof prefs.velocidade === 'number' && VELOCIDADES[prefs.velocidade] ? prefs.velocidade : 2; }
   var raiz = document.documentElement;
   var prefs = ler();
 
@@ -116,9 +118,11 @@
     var mais = el('button', { type: 'button', 'aria-label': 'Aumentar o texto', texto: 'A+' });
     var fechar = el('button', { type: 'button', classe: 'ba11y-fechar', 'aria-label': 'Fechar', texto: '✕' });
     var falar = el('button', { type: 'button', texto: '▶ Ouvir' });
-    var parar = el('button', { type: 'button', 'aria-label': 'Parar a leitura', texto: '■' });
+    var devagar = el('button', { type: 'button', 'aria-label': 'Ler mais devagar', texto: '−' });
+    var velocidade = el('output', { 'aria-live': 'polite', 'aria-label': 'Velocidade da leitura', texto: '1x' });
+    var rapido = el('button', { type: 'button', 'aria-label': 'Ler mais rápido', texto: '+' });
     var ouvir = el('div', { classe: 'ba11y-caixa ba11y-ouvir', role: 'group', 'aria-label': 'Ouvir o texto' }, [
-      el('span', { texto: 'Ouvir o texto da página' }), el('div', { classe: 'ba11y-linha' }, [falar, parar]),
+      el('span', { texto: 'Ouvir o texto da página' }), el('div', { classe: 'ba11y-linha' }, [falar, devagar, velocidade, rapido]),
       el('small', { texto: 'Dica: selecione um trecho antes para ouvir só ele.' })]);
     if (!('speechSynthesis' in window)) ouvir.hidden = true;
 
@@ -148,6 +152,7 @@
       var nivel = typeof prefs.fonte === 'number' ? prefs.fonte : 1;
       raiz.style.fontSize = nivel === 1 ? '' : TAMANHOS[nivel] + '%';
       tamanho.textContent = TAMANHOS[nivel] + '%';
+      velocidade.textContent = String(VELOCIDADES[nivelVelocidade()]).replace('.', ',') + 'x';
       OPCOES.forEach(function (o) {
         raiz.classList.toggle('ba11y-' + o[0], !!prefs[o[0]]);
         grade.querySelector('[data-opcao="' + o[0] + '"]').setAttribute('aria-pressed', String(!!prefs[o[0]]));
@@ -179,19 +184,36 @@
         Array.prototype.forEach.call(copia.querySelectorAll('script, style, noscript, nav, .ba11y-painel, .ba11y-botao'), function (n) { n.remove(); });
         return (copia.innerText || copia.textContent || '').trim();
       };
+      // lê uma frase por vez, para poder recomeçar da frase atual quando a velocidade muda
+      var partes = [], atual = 0, sessao = 0, pausado = false, mudouPausado = false;
+      var lerFrase = function () {
+        if (atual >= partes.length) { partes = []; marcar(false); return; }
+        var s = sessao, feito = false;
+        var f = new SpeechSynthesisUtterance(partes[atual]); f.lang = 'pt-BR'; var v = voz(); if (v) f.voice = v;
+        f.rate = VELOCIDADES[nivelVelocidade()];
+        f.onend = f.onerror = function () { if (feito || s !== sessao) return; feito = true; atual++; lerFrase(); };
+        speechSynthesis.speak(f);
+      };
+      var recomecar = function () { sessao++; speechSynthesis.cancel(); lerFrase(); };
       falar.addEventListener('click', function () {
-        if (speechSynthesis.speaking && !speechSynthesis.paused) { speechSynthesis.pause(); marcar(true, true); return; }
-        if (speechSynthesis.paused) { speechSynthesis.resume(); marcar(true); return; }
-        var partes = texto().match(/[^.!?\n]+[.!?]*\s*/g) || [];
-        partes.forEach(function (p, i) {
-          var f = new SpeechSynthesisUtterance(p.trim()); f.lang = 'pt-BR'; var v = voz(); if (v) f.voice = v;
-          if (i === partes.length - 1) f.onend = function () { marcar(false); };
-          speechSynthesis.speak(f);
-        });
-        marcar(true);
+        if (partes.length && !pausado) { speechSynthesis.pause(); pausado = true; marcar(true, true); return; }
+        if (partes.length && pausado) {
+          speechSynthesis.resume(); pausado = false; marcar(true);
+          if (mudouPausado) { mudouPausado = false; recomecar(); }
+          return;
+        }
+        partes = (texto().match(/[^.!?\n]+[.!?]*\s*/g) || []).map(function (p) { return p.trim(); }).filter(Boolean);
+        atual = 0; pausado = false; mudouPausado = false;
+        if (!partes.length) return;
+        recomecar(); marcar(true);
       });
-      parar.addEventListener('click', function () { speechSynthesis.cancel(); marcar(false); });
-      addEventListener('pagehide', function () { speechSynthesis.cancel(); });
+      var mudarVelocidade = function (d) {
+        prefs.velocidade = Math.min(VELOCIDADES.length - 1, Math.max(0, nivelVelocidade() + d)); salvar(); aplicar();
+        if (partes.length) { if (pausado) mudouPausado = true; else recomecar(); }
+      };
+      devagar.addEventListener('click', function () { mudarVelocidade(-1); });
+      rapido.addEventListener('click', function () { mudarVelocidade(1); });
+      addEventListener('pagehide', function () { sessao++; speechSynthesis.cancel(); });
     }
 
     aplicar();
