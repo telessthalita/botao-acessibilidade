@@ -4,14 +4,14 @@ Botão lateral de acessibilidade em **um único arquivo JavaScript**, sem depend
 
 ## O que tem
 
-- **Tamanho do texto**, em 5 níveis (90% a 150%)
+- **Tamanho do texto**, em 5 níveis (90% a 150%). Mede e escala cada elemento com texto, então funciona com `px`, `rem`, `em`, Tailwind e `clamp()`, e acompanha conteúdo que entra depois e mudança de largura da tela
 - **Ouvir o texto da página**: leitura em voz alta pelo próprio navegador, em português. Um botão só para ouvir, pausar e continuar, e botões − e + para a velocidade da leitura (de 0,5x a 2x). "Restaurar o padrão" também para a leitura. Se a pessoa selecionar um trecho, só ele é lido.
-- **Alto contraste**: fundo preto, texto branco e links em amarelo
+- **Contraste escuro** (fundo preto, texto branco, links amarelos) e **contraste claro** (fundo branco, texto preto, links azuis). Fotos e imagens de fundo continuam aparecendo, com um véu por cima quando há texto sobre elas
 - **Tons de cinza**
 - **Destacar links**
 - **Fonte mais legível** e espaçada (ajuda quem tem dislexia)
 - **Mais espaço entre as linhas**
-- **Parar animações**
+- **Parar animações**: zera animações e transições, pausa vídeos com autoplay (inclusive os que começam depois) e volta a tocá-los ao desligar. Já vem ligada para quem ativou "reduzir movimento" no sistema (`prefers-reduced-motion`)
 - **Cursor grande**
 - **Guia de leitura**: uma faixa que acompanha o ponteiro
 - **Libras** pelo [VLibras](https://vlibras.gov.br), ferramenta gratuita do governo federal. Só carrega quando a pessoa liga a opção.
@@ -36,6 +36,22 @@ Copie `acessibilidade.js` para o site e coloque antes de `</body>`:
 | `data-tamanho` | `pequeno`, `medio` ou `grande` | `medio` |
 
 Para testar no computador, abra `demo.html` no navegador.
+
+### Trocar os rótulos
+
+Qualquer texto do botão pode ser trocado com `data-textos`, em JSON. As chaves estão em `TEXTOS`, no começo de `acessibilidade.js`:
+
+```html
+<script src="/acessibilidade.js" defer data-textos='{"titulo":"Recursos de acessibilidade","botao":"Abrir acessibilidade"}'></script>
+```
+
+No WordPress, use o filtro `botao_acessibilidade_textos`.
+
+### Detalhes técnicos
+
+- **CSP**: os estilos entram por uma folha construída (`adoptedStyleSheets`), então não precisam de `'unsafe-inline'`. Em navegador antigo, o `<style>` recebe o mesmo `nonce` do `<script>`, e o script do VLibras também.
+- **Alto contraste do Windows** (`forced-colors`): as opções ligadas ganham marca com as cores do sistema, e os modos de contraste próprios ficam escondidos, porque o sistema já faz isso.
+- **Alvos de toque** de no mínimo 44 × 44 px em todos os botões, inclusive no tamanho pequeno.
 
 ## No WordPress
 

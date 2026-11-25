@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       Botão de Acessibilidade
- * Description:       Botão lateral com tamanho do texto, leitura em voz alta, alto contraste, tons de cinza, links destacados, fonte legível, espaçamento, parar animações, cursor grande, guia de leitura e Libras (VLibras).
- * Version:           1.0.0
+ * Description:       Botão lateral com tamanho do texto, leitura em voz alta, contraste escuro e claro, tons de cinza, links destacados, fonte legível, espaçamento, parar animações, cursor grande, guia de leitura e Libras (VLibras).
+ * Version:           1.1.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Thalita Teles
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // acesso direto ao arquivo: não faz nada
 }
 
-const BA11Y_VERSAO = '1.0.0';
+const BA11Y_VERSAO = '1.1.0';
 const BA11Y_OPCAO  = 'botao_acessibilidade';
 
 /** Configurações salvas, com valores padrão. */
@@ -50,6 +50,19 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 		esc_attr( $cfg['altura'] ),
 		esc_attr( $cfg['tamanho'] )
 	);
+	/**
+	 * Troca os rótulos do botão (ex.: título do painel, nome das opções).
+	 * Chaves aceitas: as de TEXTOS em acessibilidade.js.
+	 *
+	 * add_filter( 'botao_acessibilidade_textos', function ( $textos ) {
+	 *     $textos['titulo'] = 'Recursos de acessibilidade';
+	 *     return $textos;
+	 * } );
+	 */
+	$textos = apply_filters( 'botao_acessibilidade_textos', array() );
+	if ( is_array( $textos ) && $textos ) {
+		$attrs .= " data-textos='" . esc_attr( wp_json_encode( $textos ) ) . "'";
+	}
 	return str_replace( '<script ', '<script' . $attrs . ' ', $tag );
 }, 10, 2 );
 
